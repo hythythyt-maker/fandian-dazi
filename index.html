@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>饭点搭子 · 校园吃饭决策搭子</title>
+<meta name="description" content="饭点搭子：帮你决定这一顿吃什么的 Windows 桌面应用。真实美团菜单、本地规则选餐、断网可用。">
+<meta property="og:title" content="饭点搭子 · 今天吃什么">
+<meta property="og:description" content="一句话，替你把这一顿定下来。18 家真实店铺 / 150 道菜 / 本地运行。">
+<style>
+:root{
+  --dark:#14261f; --dark2:#1b3128; --cream:#f7f8f2; --ink:#16241d;
+  --green:#4a7a5e; --acc:#7aa086; --line:#dfe5d8; --muted:#6b7a6e;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--cream);color:var(--ink);
+ font-family:"PingFang SC","Microsoft YaHei",-apple-system,"Segoe UI",Roboto,sans-serif;
+ font-size:17px;line-height:1.7;-webkit-font-smoothing:antialiased}
+img,video{max-width:100%;display:block}
+a{color:inherit}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+
+nav{position:sticky;top:0;z-index:20;background:rgba(20,38,31,.94);backdrop-filter:blur(10px);
+ color:#e8efe4;font-size:14px}
+nav .wrap{display:flex;align-items:center;gap:22px;height:52px}
+nav b{font-weight:700;letter-spacing:.02em}
+nav .links{margin-left:auto;display:flex;gap:18px}
+nav a{text-decoration:none;opacity:.78}
+nav a:hover{opacity:1}
+@media(max-width:720px){nav .links{display:none}}
+
+.hero{background:var(--dark);color:#f4f7f0;padding:44px 0 56px}
+.hero h1{font-size:clamp(30px,4.6vw,52px);line-height:1.14;margin:0 0 14px;font-weight:800;letter-spacing:-.01em}
+.hero .sub{font-size:clamp(15px,1.7vw,19px);color:#c9d8c0;margin:0 0 26px;max-width:44em}
+.hero .sub em{font-style:normal;color:#eef4e8}
+.player{position:relative;border-radius:14px;overflow:hidden;background:#0d1a15;
+ box-shadow:0 24px 60px rgba(0,0,0,.45);aspect-ratio:16/9}
+.player video{width:100%;height:100%;object-fit:cover}
+.badge{position:absolute;left:14px;top:14px;background:rgba(0,0,0,.55);color:#e9f0e4;
+ font-size:12px;padding:5px 10px;border-radius:999px;letter-spacing:.03em}
+.meta{display:flex;flex-wrap:wrap;gap:10px 26px;margin-top:22px;color:#93a395;font-size:14px}
+.meta b{color:#e8efe4;font-weight:600}
+
+section{padding:64px 0}
+section.alt{background:#fff}
+.kicker{font-size:13px;letter-spacing:.12em;color:var(--green);font-weight:700;margin:0 0 10px}
+h2{font-size:clamp(24px,3vw,34px);line-height:1.25;margin:0 0 18px;font-weight:800;letter-spacing:-.01em}
+p.lead{font-size:19px;color:#33453b;max-width:40em;margin:0 0 12px}
+p{max-width:44em}
+
+.grid{display:grid;gap:18px;margin-top:26px}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:820px){.g3,.g4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.g2,.g3,.g4{grid-template-columns:1fr}}
+
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:20px}
+.alt .card{background:var(--cream)}
+.card h3{margin:0 0 8px;font-size:17px;font-weight:700}
+.card p{margin:0;color:var(--muted);font-size:15px;line-height:1.6}
+.num{font-size:34px;font-weight:800;color:var(--green);line-height:1.1;margin:0 0 6px;letter-spacing:-.02em}
+
+.steps{counter-reset:s;margin:26px 0 0;padding:0;list-style:none}
+.steps li{counter-increment:s;position:relative;padding:0 0 22px 46px;border-bottom:1px solid var(--line);margin-bottom:22px}
+.steps li:last-child{border:0;margin-bottom:0;padding-bottom:0}
+.steps li::before{content:counter(s);position:absolute;left:0;top:2px;width:28px;height:28px;border-radius:50%;
+ background:var(--green);color:#fff;font-size:14px;font-weight:700;display:grid;place-items:center}
+.steps b{display:block;margin-bottom:4px}
+.steps span{color:var(--muted);font-size:15px}
+
+.shots{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:26px}
+@media(max-width:820px){.shots{grid-template-columns:1fr}}
+.shots figure{margin:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff}
+.shots figcaption{font-size:13px;color:var(--muted);padding:9px 12px;border-top:1px solid var(--line)}
+
+.funnel{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 0}
+.funnel div{background:#fff;border:1px solid var(--line);border-radius:999px;padding:8px 16px;font-size:14px}
+.funnel div b{color:var(--green)}
+.alt .funnel div{background:var(--cream)}
+
+.warn{background:#fff8f0;border:1px solid #f0dcc4;border-radius:12px;padding:20px 22px;margin-top:22px}
+.warn h3{margin:0 0 10px;font-size:16px;color:#8a5a20}
+.warn ul{margin:0;padding-left:20px;color:#6d5335;font-size:15px}
+.warn li{margin:6px 0}
+
+.dl{display:flex;flex-wrap:wrap;gap:14px;margin-top:24px}
+.btn{display:inline-flex;align-items:center;gap:10px;background:var(--dark);color:#fff;text-decoration:none;
+ border-radius:10px;padding:13px 20px;font-size:15px;font-weight:600;border:1px solid var(--dark)}
+.btn.ghost{background:transparent;color:var(--ink);border-color:#c9d2c2}
+.btn small{font-weight:400;opacity:.7;font-size:12px}
+.note{font-size:13px;color:var(--muted);margin-top:14px}
+
+footer{background:var(--dark);color:#93a395;padding:36px 0;font-size:13px}
+footer b{color:#e8efe4}
+footer a{color:#c9d8c0}
+</style>
+</head>
+<body>
+
+<nav><div class="wrap">
+  <b>饭点搭子</b>
+  <div class="links">
+    <a href="#film">演示片</a>
+    <a href="#how">它怎么想</a>
+    <a href="#data">数据</a>
+    <a href="#tech">技术</a>
+    <a href="#limits">边界</a>
+    <a href="#get">下载</a>
+  </div>
+</div></nav>
+
+<header class="hero" id="film">
+  <div class="wrap">
+    <h1>今天吃什么，<br>到饭点为止。</h1>
+    <p class="sub">一句话，替你把这一顿定下来。<em>真实美团菜单 · 本地规则选餐 · 断网也能用。</em></p>
+
+    <div class="player">
+      <video id="demo" controls playsinline preload="metadata"
+             poster="assets/poster.jpg">
+        <source src="assets/demo.mp4" type="video/mp4">
+        你的浏览器不支持内嵌视频，可以直接<a href="assets/demo.mp4">下载观看</a>。
+      </video>
+      <span class="badge">3 分 38 秒 · 配音版</span>
+    </div>
+
+    <div class="meta">
+      <span><b>18</b> 家真实店铺</span>
+      <span><b>150</b> 道正餐</span>
+      <span>数据抓取 <b>2026-11-02</b></span>
+      <span>Windows 桌面应用 · <b>41 MB</b> · 双击即用</span>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <p class="kicker">一句话</p>
+    <h2>不是没得选，是选不出来。</h2>
+    <p class="lead">外卖软件给你两百个选项，它只给三个——每个都写着为什么是它：多少钱、等多久、符不符合你昨天说过的忌口。</p>
+    <div class="grid g3">
+      <div class="card"><p class="num">3 次</p><h3>每天要做的决策</h3><p>吃什么 · 哪一家 · 多少钱。每次都从头想一遍。</p></div>
+      <div class="card"><p class="num">5 分钟</p><h3>下课到下单</h3><p>刷完列表还是点回那家。时间花在犹豫上，不在吃上。</p></div>
+      <div class="card"><p class="num">2 个 App</p><h3>来回切换</h3><p>美团看评价，群里问食堂，没有人为你算预算。</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="alt" id="how">
+  <div class="wrap">
+    <p class="kicker">它怎么想</p>
+    <h2>三层引导，一次只问一个问题。</h2>
+    <ol class="steps">
+      <li><b>开屏就知道你在哪</b><span>时间、地点、天气、这顿能吃多久。第一句话不是「你想吃什么」，是「这一顿想怎么吃」。</span></li>
+      <li><b>对话里缺什么问什么</b><span>已知的不问，有默认值的用确认句。追问不重开对话：「快一点」「换一家」「清淡点」都在同一轮里改条件重算。</span></li>
+      <li><b>长期记得你说过的话</b><span>预算、口味、忌口、生活节奏，说一次就沉下来，之后每次推荐都算进去；说错了也能改。</span></li>
+    </ol>
+    <div class="shots">
+      <figure><img src="assets/shot-home.jpg" alt="首页：演示校区 · 教学楼 · 12:00 · 晴天" loading="lazy"><figcaption>开屏：教学楼 · 12:00 · 晴天</figcaption></figure>
+      <figure><img src="assets/shot-reco.jpg" alt="三张真实推荐卡" loading="lazy"><figcaption>一句人话 → 三家真店</figcaption></figure>
+      <figure><img src="assets/shot-memory.jpg" alt="记忆页：每顿不超过 25 元，口味偏清淡" loading="lazy"><figcaption>记忆：说一次就记住</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section id="data">
+  <div class="wrap">
+    <p class="kicker">数据</p>
+    <h2>这些店是真的。</h2>
+    <p class="lead">复旦周边的外卖列表，逐家抓菜单，然后洗一遍。清洗比抓取更重要——外卖菜单里混着加料、赠品和 0.01 元的商品券。</p>
+    <div class="funnel">
+      <div><b>156</b> 家店</div>
+      <div><b>39</b> 家有菜单</div>
+      <div><b>616</b> 条菜品</div>
+      <div><b>456</b> 条清洗后</div>
+      <div><b>150</b> 道正餐 · 18 家店</div>
+    </div>
+    <p class="note">清掉 160 条：112 条是加料 / 小料 / 收藏福利 / 商品券 / 0.01 元赠品，48 条是无价商品与重复抓取。不清的话，你说「25 元以内」，它会给你推一颗一毛钱的煎蛋。</p>
+  </div>
+</section>
+
+<section class="alt" id="tech">
+  <div class="wrap">
+    <p class="kicker">技术</p>
+    <h2>选哪家是算出来的，说话才是模型。</h2>
+    <div class="grid g4">
+      <div class="card"><h3>桌面壳</h3><p>pywebview + Edge WebView2，免安装 exe。</p></div>
+      <div class="card"><h3>前端</h3><p>React 18 + TypeScript + Vite。</p></div>
+      <div class="card"><h3>本地服务</h3><p>FastAPI，127.0.0.1 随机端口 + 会话密钥。</p></div>
+      <div class="card"><h3>选餐</h3><p>MCP 子进程，确定性打分：价格 / 时间 / 距离 / 忌口。</p></div>
+    </div>
+    <p class="lead" style="margin-top:26px">模型只负责把结果说成人话。所以不填 API Key 也能用，只是话没那么好听；断网也不影响选餐——所有数据都在你自己的电脑上。</p>
+  </div>
+</section>
+
+<section id="limits">
+  <div class="wrap">
+    <p class="kicker">我们知道的问题</p>
+    <h2>现在还不能做的。</h2>
+    <div class="warn">
+      <h3>写在这里，省得你问</h3>
+      <ul>
+        <li><b>包装费没抓</b>：卡上的价格由配送费构成，实际下单会贵 1–2 元；未做人工核价。</li>
+        <li><b>117 家店没有菜单</b>：麻辣烫、轻食、汉堡三类抓不到，所以「想减脂」现在挑不到轻食。</li>
+        <li><b>「便宜点」追问是坏的</b>：没有更便宜候选时会弹一张「换个条件，再找找」的报错卡，正在修。演示请用「快一点」「换一家」。</li>
+        <li><b>排序偏便宜</b>：价格权重 0.20、时间 0.25，凉菜容易排第一。</li>
+        <li><b>食堂那几档是虚构占位</b>：抓取只有外卖，而产品需要「食堂 vs 外卖」这个对比才成立。</li>
+        <li><b>桌面包没有代码签名</b>：Windows 会提示未知发布者。</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="alt" id="get">
+  <div class="wrap">
+    <p class="kicker">下载</p>
+    <h2>拷一个文件夹，双击就能跑。</h2>
+    <p class="lead">Windows 10/11 x64，需要 Edge WebView2 Runtime（多数电脑自带）。数据与对话都存在本机，不上传。</p>
+    <div class="dl">
+      <a class="btn" href="https://github.com/leeskywalker060726-star/fandian-dazi/releases">下载桌面版 <small>41 MB · 跳转 Releases</small></a>
+      <a class="btn ghost" href="assets/demo.mp4">下载演示片 <small>2:56 · 7.5 MB</small></a>
+      <a class="btn ghost" href="assets/deck.pptx">下载路演 deck <small>1.6 MB</small></a>
+    </div>
+    <p class="note">解压后双击 <code>FandianDazi.exe</code>。窗口是本地应用，不联网也能用；填了自己的 API Key 之后，聊天会更像人说话。</p>
+  </div>
+</section>
+
+<footer><div class="wrap">
+  <p style="margin:0 0 8px"><b>饭点搭子</b> · 黑客松 2026.11</p>
+  <p style="margin:0 0 8px">餐食目录来自美团外卖公开页面（2026-11-02 抓取）。价格与配送为参考值，下单请以美团为准；图片链接可能过期。</p>
+  <p style="margin:0">源码：<a href="https://github.com/leeskywalker060726-star/fandian-dazi">github.com/leeskywalker060726-star/fandian-dazi</a></p>
+</div></footer>
+
+<script>
+// 静音自动播放一次；不劫持用户手动暂停
+const v = document.getElementById('demo');
+const io = new IntersectionObserver((es) => {
+  es.forEach(e => {
+    if (e.isIntersecting && v.paused && !v.dataset.userPaused) v.play().catch(() => {});
+  });
+}, { threshold: 0.4 });
+io.observe(v);
+v.addEventListener('pause', () => { if (!v.ended) v.dataset.userPaused = '1'; });
+v.addEventListener('play', () => { delete v.dataset.userPaused; });
+</script>
+</body>
+</html>
